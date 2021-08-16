@@ -18,6 +18,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <climits>
+#include <string.h>
 #include "FLAC++/encoder.h"
 #include "FLAC++/decoder.h"
 
@@ -38,8 +39,12 @@ enum flaczlib_return_code {
     FLACZLIB_RC_NO_INTIALIZED = INT_MIN,
     FLACZLIB_RC_INITIALIZATION_ERROR,
     FLACZLIB_RC_COMPRESSION_ERROR,
+    FLACZLIB_RC_DECOMPRESSION_ERROR,
+    FLACZLIB_RC_METADATA_ERROR,
+    FLACZLIB_RC_BUFFER_ERROR,
     FLACZLIB_RC_WRONG_OPTIONS,
-    FLACZLIB_RC_NO_CLOSED
+    FLACZLIB_RC_END_OF_STREAM,
+    FLACZLIB_RC_CLOSED
 };
 
 #define FLACZLIB_EXTREME_COMPRESSION (uint8_t(1) << 7)
@@ -51,6 +56,12 @@ struct flaczlib_stream {
 
     uint8_t * next_out;  /* next output byte will go here */
     size_t  avail_out; /* remaining free space at next_out */
+
+    // Decompression buffer
+    uint8_t * decompress_buffer_data = NULL;
+    size_t decompress_buffer_size = 0;
+    size_t decompress_buffer_size_real = 0;
+    size_t decompress_buffer_index = 0;
 
     char *msg;  /* last error message, NULL if no error */
     FLAC__StreamEncoder *encoder_state = NULL;
@@ -72,8 +83,11 @@ class flaczlib {
         );
         ~flaczlib();
         int compress(uint32_t samples, flaczlib_flush_mode flush_mode);
-        int decompress(uint32_t samples);
+        int decompress();
+        int decompress_partial(bool reset, long long seek_to = -1);
         flaczlib_return_code get_status() { return flac_strm->status; }
+        FLAC__StreamEncoderState get_flac_encoder_status() { return FLAC__stream_encoder_get_state(flac_strm->encoder_state); }
+        FLAC__StreamDecoderState get_flac_decoder_status() { return FLAC__stream_decoder_get_state(flac_strm->decoder_state); }
         void close();
         flaczlib_stream * flac_strm;
 
