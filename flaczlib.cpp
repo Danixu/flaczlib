@@ -74,7 +74,6 @@ FLAC__StreamDecoderReadStatus decode_read_callback(const FLAC__StreamDecoder *de
             return FLAC__STREAM_DECODER_READ_STATUS_END_OF_STREAM;
         }
 
-        //printf("memcpy\n");
         memcpy(buffer, flac_strm_int.next_in, to_read);
         flac_strm_int.next_in += to_read;
         flac_strm_int.avail_in -= to_read;

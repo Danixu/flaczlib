@@ -10,26 +10,12 @@ int main() {
     uint8_t in_buffer[0x400000] = {};
     uint8_t out_buffer[2352] = {};
     
-    //printf("Initialize the compressor\n");
+    printf("Initialize the Decompressor\n");
     flaczlib compressor = flaczlib(false);
 
-    /* Generated flac is an stream, so metadata is at end of file.
-     * Must be readed or decoding will fail */
-
-    //fseek(in, sizeof(in_buffer), SEEK_END);
-    //fread(in_buffer, sizeof(in_buffer), 1, in);
-    //compressor.flac_strm->avail_in = sizeof(in_buffer);
-    //compressor.flac_strm->next_in = in_buffer;
-
-    //compressor.get_metadata();
-
-    // Reset the in status
-    //compressor.flac_strm->avail_in = 0;
-    //fseek(in, 0, SEEK_SET);
-
-    printf("Decompress file\n");
+    printf("Decompressing the input file\n");
+    // While in file is not fully readed, there is data in IN buffer and compressor is not in End Of Stream, decompress data.
     while (!feof(in) || compressor.flac_strm->avail_in || compressor.get_status() != FLACZLIB_RC_END_OF_STREAM) {
-        //printf("Status: %d\n", compressor.get_status());
         if (!feof(in) && compressor.flac_strm->avail_in < (sizeof(in_buffer) * 0.25)) {
             memmove(in_buffer, in_buffer + (sizeof(in_buffer) - compressor.flac_strm->avail_in), compressor.flac_strm->avail_in);
 
@@ -45,7 +31,6 @@ int main() {
         int decompress_status = compressor.decompress_partial(false, -1);
 
         if (decompress_status == 0) {
-            //printf("Writting...\n");
             fwrite(out_buffer, sizeof(out_buffer) - compressor.flac_strm->avail_out, 1, out);
         }
         else {
@@ -54,7 +39,7 @@ int main() {
         }
     }
 
-    printf("Closing the files\n");
+    printf("Finished!!, flushing cache and closing files.\n");
 
     fflush(out);
     fclose(in);
