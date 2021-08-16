@@ -90,7 +90,7 @@ FLAC__StreamDecoderReadStatus decode_read_callback(const FLAC__StreamDecoder *de
 }
 
 
-FLAC__StreamDecoderWriteStatus decode_write_callback(
+::FLAC__StreamDecoderWriteStatus decode_write_callback(
     const FLAC__StreamDecoder *decoder,
     const FLAC__Frame *frame,
     const FLAC__int32 *const ibuffer[],
@@ -209,7 +209,7 @@ flaczlib::flaczlib(
     int8_t arg_compression_level
 ){
     // Store the global status varible into a pointer to be used from outside
-    flac_strm = &flac_strm_int;
+    strm = &flac_strm_int;
     // Input data
     flac_strm_int.next_in = NULL;
     flac_strm_int.avail_in = 0;

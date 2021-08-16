@@ -85,11 +85,11 @@ class flaczlib {
         int compress(uint32_t samples, flaczlib_flush_mode flush_mode);
         int decompress();
         int decompress_partial(bool reset, long long seek_to = -1);
-        flaczlib_return_code get_status() { return flac_strm->status; }
-        FLAC__StreamEncoderState get_flac_encoder_status() { return FLAC__stream_encoder_get_state(flac_strm->encoder_state); }
-        FLAC__StreamDecoderState get_flac_decoder_status() { return FLAC__stream_decoder_get_state(flac_strm->decoder_state); }
+        flaczlib_return_code get_status() { return strm->status; }
+        FLAC__StreamEncoderState get_flac_encoder_status() { return FLAC__stream_encoder_get_state(strm->encoder_state); }
+        FLAC__StreamDecoderState get_flac_decoder_status() { return FLAC__stream_decoder_get_state(strm->decoder_state); }
         void close();
-        flaczlib_stream * flac_strm;
+        flaczlib_stream * strm;
 
     private:
         bool is_compressor;
@@ -99,4 +99,13 @@ class flaczlib {
         size_t block_size;
         int8_t compression_level;
         bool exhaustive_model_search;
+
+        /*
+        virtual ::FLAC__StreamDecoderWriteStatus decode_write_callback(
+            const FLAC__StreamDecoder *decoder,
+            const FLAC__Frame *frame,
+            const FLAC__int32 *const ibuffer[],
+            void *client_data
+        );
+        */
 };
