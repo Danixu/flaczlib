@@ -1,0 +1,2 @@
+g++ -g -fsanitize=address -o example_compress example_compress.cpp -I ../ -I ../../flac/include/ ../flaczlib.cpp ../../flac/src/libFLAC/.libs/libFLAC-static.a
+g++ -g -fsanitize=address -o example_decompress example_decompress.cpp -I ../ -I ../../flac/include/ ../flaczlib.cpp ../../flac/src/libFLAC/.libs/libFLAC-static.a
