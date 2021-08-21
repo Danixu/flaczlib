@@ -427,16 +427,22 @@ void flaczlib::close() {
     if (flac_strm_int.encoder_state) {
         FLAC__stream_encoder_finish(flac_strm_int.encoder_state);
         FLAC__stream_encoder_delete(flac_strm_int.encoder_state);
+        flac_strm_int.encoder_state = NULL;
     }
     
     if (flac_strm_int.decoder_state) {
-        FLAC__stream_decoder_finish(flac_strm_int.decoder_state);
+        FLAC__stream_decoder_finish(flac_strm_int.decoder_state); // Must be fixed, because is causing segmentation fault
         FLAC__stream_decoder_delete(flac_strm_int.decoder_state);
+        flac_strm_int.decoder_state = NULL;
     }
 
     // Free the buffer if exists
     if (flac_strm_int.decompress_buffer_data) {
         free(flac_strm_int.decompress_buffer_data);
+        flac_strm_int.decompress_buffer_size = 0;
+        flac_strm_int.decompress_buffer_size_real = 0;
+        flac_strm_int.decompress_buffer_index = 0;
+        flac_strm_int.decompress_buffer_data = NULL;
     }
 
     flac_strm_int.status = FLACZLIB_RC_CLOSED;
